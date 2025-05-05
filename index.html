@@ -158,17 +158,6 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
 
-    .admin-panel {
-      margin-top: 2rem;
-      background: #f9f9f9;
-      padding: 1rem;
-      border-radius: 8px;
-    }
-
-    .admin-panel input {
-      margin: 0.25rem;
-      padding: 0.5rem;
-    }
   </style>
 </head>
 <body>
@@ -199,22 +188,6 @@
       </thead>
       <tbody id="flightTable"></tbody>
     </table>
-
-    <section class="admin-panel">
-      <h3>Admin Panel - Add Flight</h3>
-      <input type="text" id="adminFlight" placeholder="Flight No (e.g., SP123)" />
-      <input type="text" id="adminDest" placeholder="Destination" />
-      <input type="text" id="adminTime" placeholder="Time (e.g., 14:30)" />
-      <input type="text" id="adminGate" placeholder="Gate (e.g., G5)" />
-      <select id="adminStatus">
-        <option>On Time</option>
-        <option>Delayed</option>
-        <option>Cancelled</option>
-        <option>Boarding</option>
-      </select>
-      <input type="text" id="adminPassengers" placeholder="Passengers (comma separated)" />
-      <button class="btn" onclick="adminAddFlight()">Add Flight</button>
-    </section>
   </main>
 
   <script>
@@ -250,27 +223,16 @@
       showNotification(`${flightNum} to ${dest} is ${status}`);
     }
 
-    function autoAddFlight() {
-      const flightNum = "SP" + Math.floor(Math.random() * 900 + 100);
-      const dest = destinations[Math.floor(Math.random() * destinations.length)];
-      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const gate = "G" + Math.floor(Math.random() * 10 + 1);
-      const status = statuses[Math.floor(Math.random() * statuses.length)];
-      const passengers = generatePassengerList();
-      addFlight(flightNum, dest, time, gate, status, passengers);
-    }
-
-    function adminAddFlight() {
-      const f = document.getElementById("adminFlight").value;
-      const d = document.getElementById("adminDest").value;
-      const t = document.getElementById("adminTime").value;
-      const g = document.getElementById("adminGate").value;
-      const s = document.getElementById("adminStatus").value;
-      const p = document.getElementById("adminPassengers").value;
-      if (f && d && t && g && p) {
-        addFlight(f, d, t, g, s, p);
-      } else {
-        alert("Please fill all fields.");
+    // Function to generate 15-20 random flights
+    function generateRandomFlights() {
+      for (let i = 0; i < 20; i++) {
+        const flightNum = "SP" + Math.floor(Math.random() * 900 + 100);
+        const dest = destinations[Math.floor(Math.random() * destinations.length)];
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const gate = "G" + Math.floor(Math.random() * 10 + 1);
+        const status = statuses[Math.floor(Math.random() * statuses.length)];
+        const passengers = generatePassengerList();
+        addFlight(flightNum, dest, time, gate, status, passengers);
       }
     }
 
@@ -301,8 +263,8 @@
     setInterval(updateClock, 1000);
     updateWeather();
     setInterval(updateWeather, 10000);
-    autoAddFlight();
-    setInterval(autoAddFlight, 20000);
+    generateRandomFlights();  // Generate initial set of random flights
   </script>
 </body>
 </html>
+
