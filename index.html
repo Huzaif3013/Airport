@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyPort Airport Dashboard</title>
+  <style>
+    :root {
+      --main-color: #004e8a;
+      --accent-color: #0077cc;
+      --danger-color: #e63946;
+      --success-color: #2a9d8f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(270deg, #a0d8ef, #e0f7fa, #a0d8ef);
+      background-size: 600% 600%;
+      animation: backgroundMove 30s ease infinite;
+      overflow-x: hidden;
+    }
+
+    @keyframes backgroundMove {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    header {
+      background: var(--main-color);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 { margin: 0; font-size: 1.8rem; }
+
+    nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    nav a:hover { text-decoration: underline; }
+
+    .clock { font-size: 1rem; color: #fff; }
+
+    main { padding: 2rem; }
+
+    .btn {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin: 0.5rem 0;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+
+    .btn:hover { background-color: #005fa3; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      margin-top: 1rem;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th { background-color: #f0f0f0; }
+
+    tbody tr { opacity: 0; transform: translateY(20px); animation: fadeIn 0.5s ease forwards; }
+    tbody tr:hover { animation: pulse 0.3s ease; }
+
+    @keyframes fadeIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% {transform: scale(1);}
+      50% {transform: scale(1.02);}
+      100% {transform: scale(1);}
+    }
+
+    .status {
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .on-time { color: var(--success-color); }
+    .delayed { color: orange; }
+    .cancelled { color: var(--danger-color); }
+    .boarding { color: var(--accent-color); }
+
+    .hidden { display: none; }
+
+    .notification {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: #fff;
+      border-left: 5px solid var(--accent-color);
+      padding: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      animation: fadeIn 0.4s ease forwards;
+      z-index: 999;
+    }
+
+    .weather {
+      margin-top: 1rem;
+      background: #ffffffaa;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .cloud {
+      position: absolute;
+      width: 120px;
+      height: 60px;
+      background: white;
+      border-radius: 50%;
+      top: 50px;
+      left: -150px;
+      opacity: 0.3;
+      animation: cloudMove 60s linear infinite;
+    }
+
+    @keyframes cloudMove {
+      0% { left: -150px; }
+      100% { left: 110%; }
+    }
+
+    .info-section {
+      background: #ffffffcc;
+      padding: 2rem;
+      margin: 2rem 0;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .admin-panel {
+      margin-top: 2rem;
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .admin-panel input {
+      margin: 0.25rem;
+      padding: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="cloud"></div>
+  <div class="cloud" style="top: 120px; animation-delay: 10s;"></div>
+  <header>
+    <h1>SkyPort Airport</h1>
+    <span class="clock" id="clock">--:--:--</span>
+  </header>
+  <main>
+    <section class="info-section">
+      <h2>Welcome to SkyPort Airport</h2>
+      <p>
+        SkyPort Airport is one of the busiest and most modern aviation hubs in the region, serving millions of passengers annually with world-class facilities, seamless connections, and efficient air traffic operations. We take pride in our safety, sustainability, and service excellence.
+      </p>
+      <p>
+        Our terminal includes over 100 gates, luxury lounges, duty-free shopping, and high-speed train access to major cities.
+      </p>
+    </section>
+
+    <input type="text" id="search" placeholder="Search flights..." onkeyup="filterFlights()" style="padding:10px;width:100%;max-width:400px;margin-bottom:1rem" />
+
+    <div class="weather" id="weatherPanel">Loading weather...</div>
+
+    <table>
+      <thead>
+        <tr><th>Flight</th><th>Destination</th><th>Time</th><th>Gate</th><th>Status</th><th>Passengers</th></tr>
+      </thead>
+      <tbody id="flightTable"></tbody>
+    </table>
+
+    <section class="admin-panel">
+      <h3>Admin Panel - Add Flight</h3>
+      <input type="text" id="adminFlight" placeholder="Flight No (e.g., SP123)" />
+      <input type="text" id="adminDest" placeholder="Destination" />
+      <input type="text" id="adminTime" placeholder="Time (e.g., 14:30)" />
+      <input type="text" id="adminGate" placeholder="Gate (e.g., G5)" />
+      <select id="adminStatus">
+        <option>On Time</option>
+        <option>Delayed</option>
+        <option>Cancelled</option>
+        <option>Boarding</option>
+      </select>
+      <input type="text" id="adminPassengers" placeholder="Passengers (comma separated)" />
+      <button class="btn" onclick="adminAddFlight()">Add Flight</button>
+    </section>
+  </main>
+
+  <script>
+    const destinations = ["New York", "London", "Tokyo", "Dubai", "Paris", "Sydney"];
+    const statuses = ["On Time", "Delayed", "Cancelled", "Boarding"];
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById("clock").textContent = now.toLocaleTimeString();
+    }
+
+    function generatePassengerList() {
+      const passengers = [];
+      const count = Math.floor(Math.random() * 5) + 2;
+      for (let i = 0; i < count; i++) {
+        passengers.push("Passenger " + (Math.floor(Math.random() * 100) + 1));
+      }
+      return passengers.join(", ");
+    }
+
+    function addFlight(flightNum, dest, time, gate, status, passengers) {
+      const table = document.getElementById("flightTable");
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${flightNum}</td>
+        <td>${dest}</td>
+        <td>${time}</td>
+        <td>${gate}</td>
+        <td class="status ${status.toLowerCase().replace(/ /g, '-')}">${status}</td>
+        <td>${passengers}</td>
+      `;
+      table.appendChild(row);
+      showNotification(`${flightNum} to ${dest} is ${status}`);
+    }
+
+    function autoAddFlight() {
+      const flightNum = "SP" + Math.floor(Math.random() * 900 + 100);
+      const dest = destinations[Math.floor(Math.random() * destinations.length)];
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const gate = "G" + Math.floor(Math.random() * 10 + 1);
+      const status = statuses[Math.floor(Math.random() * statuses.length)];
+      const passengers = generatePassengerList();
+      addFlight(flightNum, dest, time, gate, status, passengers);
+    }
+
+    function adminAddFlight() {
+      const f = document.getElementById("adminFlight").value;
+      const d = document.getElementById("adminDest").value;
+      const t = document.getElementById("adminTime").value;
+      const g = document.getElementById("adminGate").value;
+      const s = document.getElementById("adminStatus").value;
+      const p = document.getElementById("adminPassengers").value;
+      if (f && d && t && g && p) {
+        addFlight(f, d, t, g, s, p);
+      } else {
+        alert("Please fill all fields.");
+      }
+    }
+
+    function filterFlights() {
+      const filter = document.getElementById("search").value.toLowerCase();
+      const rows = document.querySelectorAll("#flightTable tr");
+      rows.forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(filter) ? "" : "none";
+      });
+    }
+
+    function showNotification(message) {
+      const note = document.createElement("div");
+      note.className = "notification";
+      note.textContent = message;
+      document.body.appendChild(note);
+      setTimeout(() => note.remove(), 4000);
+    }
+
+    function updateWeather() {
+      const temps = ["15°C", "22°C", "30°C", "18°C"];
+      const conds = ["Sunny", "Cloudy", "Rainy", "Windy"];
+      const random = () => Math.floor(Math.random() * 4);
+      document.getElementById("weatherPanel").textContent = `Weather: ${conds[random()]} | Temp: ${temps[random()]}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+    updateWeather();
+    setInterval(updateWeather, 10000);
+    autoAddFlight();
+    setInterval(autoAddFlight, 20000);
+  </script>
+</body>
+</html>
