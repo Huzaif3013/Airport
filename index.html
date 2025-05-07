@@ -10,23 +10,25 @@
       --accent-color: #0077cc;
       --danger-color: #e63946;
       --success-color: #2a9d8f;
+      --bg-color: #f5f5f5;
+      --text-color: #000;
     }
 
-    * { box-sizing: border-box; }
+    body.dark {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(270deg, #a0d8ef, #e0f7fa, #a0d8ef);
-      background-size: 600% 600%;
-      animation: backgroundMove 30s ease infinite;
-      overflow-x: hidden;
-    }
-
-    @keyframes backgroundMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
     }
 
     header {
@@ -43,65 +45,50 @@
 
     header h1 { margin: 0; font-size: 1.8rem; }
 
-    nav a {
-      color: white;
+    .clock, .toggle-darkmode {
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .toggle-darkmode {
       margin-left: 20px;
-      text-decoration: none;
       cursor: pointer;
-      transition: 0.3s;
+      padding: 5px 10px;
+      background: #fff2;
+      border-radius: 5px;
     }
 
-    nav a:hover { text-decoration: underline; }
-
-    .clock { font-size: 1rem; color: #fff; }
-
-    main { padding: 2rem; }
-
-    .btn {
-      background-color: var(--accent-color);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      margin: 0.5rem 0;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background 0.3s;
-    }
-
-    .btn:hover { background-color: #005fa3; }
+    main { padding: 1rem; }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      background: white;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
       margin-top: 1rem;
+      background-color: #fff;
+      color: #000;
+    }
+
+    body.dark table {
+      background-color: #222;
+      color: #e0e0e0;
     }
 
     th, td {
-      padding: 12px;
-      border-bottom: 1px solid #ccc;
+      padding: 10px;
       text-align: left;
     }
 
-    th { background-color: #f0f0f0; }
-
-    tbody tr { opacity: 0; transform: translateY(20px); animation: fadeIn 0.5s ease forwards; }
-    tbody tr:hover { animation: pulse 0.3s ease; }
-
-    @keyframes fadeIn {
-      to { opacity: 1; transform: translateY(0); }
+    th {
+      background-color: #f0f0f0;
     }
 
-    @keyframes pulse {
-      0% {transform: scale(1);}
-      50% {transform: scale(1.02);}
-      100% {transform: scale(1);}
+    body.dark th {
+      background-color: #333;
     }
 
     .status {
       font-weight: bold;
-      transition: 0.3s;
+      transition: all 0.3s ease;
     }
 
     .on-time { color: var(--success-color); }
@@ -109,88 +96,52 @@
     .cancelled { color: var(--danger-color); }
     .boarding { color: var(--accent-color); }
 
-    .hidden { display: none; }
-
-    .notification {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
+    .passenger-checkin, .history-log {
       background: #fff;
-      border-left: 5px solid var(--accent-color);
       padding: 1rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      animation: fadeIn 0.4s ease forwards;
-      z-index: 999;
-    }
-
-    .weather {
       margin-top: 1rem;
-      background: #ffffffaa;
-      padding: 1rem;
       border-radius: 8px;
-      font-size: 1rem;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
-    .cloud {
-      position: absolute;
-      width: 120px;
-      height: 60px;
-      background: white;
-      border-radius: 50%;
-      top: 50px;
-      left: -150px;
-      opacity: 0.3;
-      animation: cloudMove 60s linear infinite;
+    body.dark .passenger-checkin, body.dark .history-log {
+      background: #1e1e1e;
     }
 
-    @keyframes cloudMove {
-      0% { left: -150px; }
-      100% { left: 110%; }
+    .log-entry {
+      font-size: 0.9rem;
+      margin: 0.25rem 0;
     }
 
-    .info-section {
-      background: #ffffffcc;
-      padding: 2rem;
-      margin: 2rem 0;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    @media (max-width: 600px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      th { display: none; }
+      td {
+        position: relative;
+        padding-left: 50%;
+      }
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        font-weight: bold;
+      }
     }
-
-    /* Admin Panel */
-    #adminPanel {
-      background: #fff9f0;
-      padding: 2rem;
-      margin-top: 2rem;
-      border-radius: 10px;
-      display: none;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    #adminPanel h2 { color: var(--main-color); }
   </style>
 </head>
 <body>
-  <div class="cloud"></div>
-  <div class="cloud" style="top: 120px; animation-delay: 10s;"></div>
   <header>
     <h1>SkyPort Airport</h1>
     <div>
-      <nav>
-        <a onclick="toggleAdmin()">Admin</a>
-      </nav>
       <span class="clock" id="clock">--:--:--</span>
+      <span class="toggle-darkmode" onclick="toggleDarkMode()">🌓</span>
     </div>
   </header>
+
   <main>
-    <section class="info-section">
-      <h2>Welcome to SkyPort Airport</h2>
-      <p>SkyPort Airport is one of the busiest and most modern aviation hubs in the region...</p>
-    </section>
-
-    <input type="text" id="search" placeholder="Search flights..." onkeyup="filterFlights()" style="padding:10px;width:100%;max-width:400px;margin-bottom:1rem" />
-
-    <div class="weather" id="weatherPanel">Loading weather...</div>
+    <input type="text" id="search" placeholder="Search flights..." style="padding:10px;width:100%;max-width:400px;margin-bottom:1rem" onkeyup="filterFlights()" />
 
     <table>
       <thead>
@@ -199,16 +150,26 @@
       <tbody id="flightTable"></tbody>
     </table>
 
-    <!-- Admin Panel -->
-    <div id="adminPanel">
-      <h2>Admin Panel</h2>
-      <p>This section is restricted to airport staff only. Use it for secure operations.</p>
-      <button class="btn" onclick="generateRandomFlights()">Generate New Flights</button>
+    <div class="passenger-checkin">
+      <h3>Passenger Self Check-In</h3>
+      <input type="text" id="checkinFlight" placeholder="Flight No (e.g., SP123)" />
+      <input type="text" id="checkinName" placeholder="Passenger Name" />
+      <button onclick="checkinPassenger()">Check In</button>
+    </div>
+
+    <div class="history-log">
+      <h3>Flight History Log</h3>
+      <div id="logContainer"></div>
     </div>
   </main>
 
   <script>
-    const destinations = ["New York", "London", "Tokyo", "Dubai", "Paris", "Sydney"];
+    const flightTable = document.getElementById("flightTable");
+    const logContainer = document.getElementById("logContainer");
+
+    const flights = [];
+
+    const destinations = ["New York", "London", "Tokyo", "Dubai", "Paris", "Berlin", "Toronto", "Sydney"];
     const statuses = ["On Time", "Delayed", "Cancelled", "Boarding"];
 
     function updateClock() {
@@ -216,85 +177,77 @@
       document.getElementById("clock").textContent = now.toLocaleTimeString();
     }
 
-    function generatePassengerList() {
-      const passengers = [];
-      const count = Math.floor(Math.random() * 5) + 2;
-      for (let i = 0; i < count; i++) {
-        passengers.push("Passenger " + (Math.floor(Math.random() * 100) + 1));
-      }
-      return passengers.join(", ");
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
     }
 
     function addFlight(flightNum, dest, time, gate, status, passengers) {
-      const table = document.getElementById("flightTable");
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${flightNum}</td>
-        <td>${dest}</td>
-        <td>${time}</td>
-        <td>${gate}</td>
-        <td class="status ${status.toLowerCase().replace(/ /g, '-')}">${status}</td>
-        <td>${passengers}</td>
+        <td data-label="Flight">${flightNum}</td>
+        <td data-label="Destination">${dest}</td>
+        <td data-label="Time">${time}</td>
+        <td data-label="Gate">${gate}</td>
+        <td data-label="Status" class="status ${status.toLowerCase().replace(/ /g, '-')}">${status}</td>
+        <td data-label="Passengers">${passengers}</td>
       `;
-      table.appendChild(row);
-      showNotification(`${flightNum} to ${dest} is ${status}`);
+      flightTable.appendChild(row);
+      log(`Flight added: ${flightNum} to ${dest} - ${status}`);
     }
 
-    function generateRandomFlights() {
-      document.getElementById("flightTable").innerHTML = ""; // clear existing
-      for (let i = 0; i < 20; i++) {
-        const flightNum = "SP" + Math.floor(Math.random() * 900 + 100);
-        const dest = destinations[Math.floor(Math.random() * destinations.length)];
-        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const gate = "G" + Math.floor(Math.random() * 10 + 1);
-        const status = statuses[Math.floor(Math.random() * statuses.length)];
-        const passengers = generatePassengerList();
-        addFlight(flightNum, dest, time, gate, status, passengers);
-      }
+    function generateFlight() {
+      const flightNum = "SP" + Math.floor(Math.random() * 900 + 100);
+      const dest = destinations[Math.floor(Math.random() * destinations.length)];
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const gate = "G" + Math.floor(Math.random() * 10 + 1);
+      const status = statuses[Math.floor(Math.random() * statuses.length)];
+      const passengers = "Passenger " + (Math.floor(Math.random() * 90) + 10);
+      addFlight(flightNum, dest, time, gate, status, passengers);
     }
 
     function filterFlights() {
       const filter = document.getElementById("search").value.toLowerCase();
-      const rows = document.querySelectorAll("#flightTable tr");
+      const rows = flightTable.querySelectorAll("tr");
       rows.forEach(row => {
         row.style.display = row.textContent.toLowerCase().includes(filter) ? "" : "none";
       });
     }
 
-    function showNotification(message) {
-      const note = document.createElement("div");
-      note.className = "notification";
-      note.textContent = message;
-      document.body.appendChild(note);
-      setTimeout(() => note.remove(), 4000);
-    }
-
-    function updateWeather() {
-      const temps = ["15°C", "22°C", "30°C", "18°C"];
-      const conds = ["Sunny", "Cloudy", "Rainy", "Windy"];
-      const random = () => Math.floor(Math.random() * 4);
-      document.getElementById("weatherPanel").textContent = `Weather: ${conds[random()]} | Temp: ${temps[random()]}`;
-    }
-
-    function toggleAdmin() {
-      const correctPassword = "airport123";
-      const userInput = prompt("Enter admin password:");
-      if (userInput === correctPassword) {
-        document.getElementById("adminPanel").style.display = "block";
-        showNotification("Access granted to Admin Panel.");
+    function checkinPassenger() {
+      const flight = document.getElementById("checkinFlight").value;
+      const name = document.getElementById("checkinName").value;
+      if (flight && name) {
+        log(`Passenger ${name} checked into flight ${flight}`);
+        alert(`Check-in successful for ${name} on flight ${flight}`);
       } else {
-        showNotification("Incorrect password. Access denied.");
+        alert("Please fill both flight number and name.");
       }
     }
 
-    // Initialize page
+    function log(message) {
+      const entry = document.createElement("div");
+      entry.className = "log-entry";
+      entry.textContent = new Date().toLocaleTimeString() + " - " + message;
+      logContainer.prepend(entry);
+    }
+
     updateClock();
     setInterval(updateClock, 1000);
-    updateWeather();
-    setInterval(updateWeather, 10000);
-    generateRandomFlights();
+    for (let i = 0; i < 15; i++) generateFlight();
+    setInterval(() => {
+      const rows = flightTable.querySelectorAll("tr");
+      if (rows.length) {
+        const i = Math.floor(Math.random() * rows.length);
+        const cell = rows[i].querySelector(".status");
+        const newStatus = statuses[Math.floor(Math.random() * statuses.length)];
+        cell.textContent = newStatus;
+        cell.className = "status " + newStatus.toLowerCase().replace(/ /g, '-');
+        log(`Flight status updated to ${newStatus}`);
+      }
+    }, 15000);
   </script>
 </body>
 </html>
+
 
 
